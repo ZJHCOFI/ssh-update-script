@@ -1,4 +1,4 @@
-# OpenSSL和OpenSSH的“一键”更新脚本 (OpenSSL & OpenSSH Update Shell) 
+# OpenSSL和OpenSSH的“一键”升级脚本 (OpenSSL & OpenSSH Update Shell) 
 
 ## 脚本功能 (Script functionality)
 伪一键升级OpenSSL和OpenSSH，以应对无穷无尽的安全扫描 (Fake one click upgrade to OpenSSL and OpenSSH，to cope with endless security scans)
