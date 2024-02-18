@@ -6,7 +6,7 @@
 
 ## 支持系统 (Supported systems)
 **CentOS 7**：暂时只测试了CentOS 7的升级，所以暂时只支持它  
-(We have only tested the upgrade of CentOS for now, so we only support it for now)
+(We have only tested the upgrade of CentOS 7 for now, so we only support it for now)
 
 ## 注意事项 (Attention)
 1、回滚功能尚未实现！  
