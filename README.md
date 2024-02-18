@@ -7,4 +7,4 @@
 **CentOS**：暂时只测试了CentOS的升级，所以暂时只支持它 (We have only tested the upgrade of CentOS for now, so we only support it for now)
 
 ## 使用方法 (How to use)
-'sh ssh_update_onekey'
+'sh ssh_update_onekey.sh'
