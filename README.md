@@ -7,7 +7,8 @@
 **CentOS**：暂时只测试了CentOS的升级，所以暂时只支持它 (We have only tested the upgrade of CentOS for now, so we only support it for now)
 
 ## 注意事项 (Attention)
-回滚功能尚未实现！ (The rollback function has not been implemented yet)
+1、回滚功能尚未实现！ (The rollback function has not been implemented yet)
+2、请留意SSH的配置文件，你很可能需要改动它！ (Please pay attention to the SSH configuration file, as you may need to make changes to it)
 
 ## 使用方法 (How to use)
 'sh ssh_update_onekey.sh'
