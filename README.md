@@ -11,7 +11,7 @@
 ## 注意事项 (Attention)
 1、回滚功能尚未实现！  
 (1、The rollback function has not been implemented yet)  
-2、请留意SSH的配置文件，你很可能需要改动它！  、
+2、请留意SSH的配置文件，你很可能需要改动它！  
 (2、Please pay attention to the SSH configuration file, as you may need to make changes to it)
 
 ## 使用方法 (How to use)
