@@ -15,4 +15,4 @@
 (Please pay attention to the SSH configuration file, as you may need to make changes to it)
 
 ## 使用方法 (How to use)
-'sh ssh_update_onekey.sh'
+`sh ssh_update_onekey.sh`
