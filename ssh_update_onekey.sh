@@ -5,7 +5,7 @@
 # System Request:Centos 7
 # Function：Upgrade OpenSSH and OpenSSL versions
 #===============================
-# 脚本更新时间（Script update time）：2024.02.19 19:00
+# 脚本更新时间（Script update time）：2024.02.20 18:00
 # 脚本作者：ZJHCOFI
 # Edit by ZJHCOFI
 # 博客（Blog）：http://zjhcofi.com
@@ -16,21 +16,23 @@
 #=====更新日志（Changelog）=====
 # 2023.09.03 13:49
 # 第一个版本发布 First Edition Release
-# 2024.02.19 19:00
+# 2024.02.20 18:00
 # 1、修改了OpenSSL的下载机制
+# 2、优化了操作流程
+# 3、修复了检测版本包数量的bug
 #===============================
 
 # 字体颜色配置
 Green="\033[32m"
 Red="\033[31m"
+RedBG="\033[41;37m"
 Yellow="\033[33m"
 Blue="\033[36m"
 Font="\033[0m"
-# RedBG="\033[41;37m"
 OK="${Green}[OK]${Font}"
 CHOOSE="${Yellow}[CHOOSE]${Font}"
 INFO="${Yellow}[INFO]${Font}"
-ERROR="${Red}[ERROR]${Font}"
+ERROR="${RedBG}[ERROR]${Font}"
 
 # 全局变量
 openssh_version=""
@@ -189,19 +191,19 @@ function system_check() {
 # openssh版本包检测
 function openssh_check() {
 	
-	openssh_file_num=$(ls ${path_way} | grep openssh-*p*.tar.gz | wc -l)
+	openssh_file_num=$(ls ${path_way} | grep "openssh-" | grep -G ".tar.gz$" | wc -l)
 
 	if [[ ${openssh_file_num} == "0" ]];then
 		print_error "脚本目录下没有OpenSSH版本包。There is no OpenSSH package in the script directory."
 		openssh_version=""
 		openssh_download
 	elif [[ ${openssh_file_num} != "1" ]];then 
-		print_error "脚本目录下只能存在一个OpenSSH版本包。Only one OpenSSH package can exist in the script directory."
-		openssh_version=""
-		openssh_download
+		print_error "脚本目录下只能存在一个OpenSSH版本包，请删除不需要的版本。Only one OpenSSH package can exist in the script directory,please delete unnecessary versions."
+		cd ${path_way} && ls -lh
+		exit 1
 	else
-		openssh_version=$(ls ${path_way} | grep openssh-*p*.tar.gz)
-		print_ok "检测到脚本目录下的OpenSSH版本包为 ${Font}${Red}${openssh_version}${Blue}，继续执行安装程序。Detected that the OpenSSH package in the script directory is ${Font}${Red}${openssh_version}${Blue},continue installation."
+		openssh_version=$(ls ${path_way} | grep "openssh-" | grep -G ".tar.gz$")
+		print_ok "检测到脚本目录下的OpenSSH版本包为 ${Font}${Yellow}${openssh_version}${Blue}，继续执行安装程序。Detected that the OpenSSH package in the script directory is ${Font}${Yellow}${openssh_version}${Blue},continue installation."
 		
 		case ${update_choose_num} in
 		1)
@@ -223,24 +225,28 @@ function openssh_check() {
 # openssl版本包检测
 function openssl_check() {
 
-	openssl_file_num=$(ls ${path_way} | grep openssl-*.tar.gz | wc -l)
+	openssl_file_num=$(ls ${path_way} | grep "openssl-" | grep -G ".tar.gz$" | wc -l)
 
 	if [[ ${openssl_file_num} == "0" ]];then
 		print_error "脚本目录下没有OpenSSL版本包。There is no OpenSSL package in the script directory."
 		openssl_version=""
 		openssl_download
 	elif [[ ${openssl_file_num} != "1" ]];then
-		print_error "脚本目录下只能存在一个OpenSSL版本包。Only one OpenSSL package can exist in the script directory."
-		openssl_version=""
-		openssl_download
+		print_error "脚本目录下只能存在一个OpenSSL版本包，请删除不需要的版本。Only one OpenSSL package can exist in the script directory,please delete unnecessary versions."
+		cd ${path_way} && ls -lh
+		exit 1
 	else
-		openssl_version=$(ls ${path_way} | grep openssl-*.tar.gz)
+		openssl_version=$(ls ${path_way} | grep "openssl-" | grep -G ".tar.gz$")
 		if [[ ${system_version} == "centos7" && $(echo ${openssl_version} | grep openssl-1.*.*tar.gz) == "" ]]; then
-			echo -e "\n${ERROR}检测到脚本目录下的OpenSSL版本包为 ${Font}${Red}${openssl_version}${Blue}，可能不适用于当前系统，建议更换为openssl-1.x.xx的版本，下载地址：${Font}${Yellow}https://www.openssl.org/source/old/1.1.1/index.html ${Font}。Detected that the OpenSSL package in the script directory is ${Font}${Red}${openssl_version}${Blue},may not be applicable to the current system,it is recommended to replace it with the version of openssl-1.x.xx,download url:${Font}${Yellow}https://www.openssl.org/source/old/1.1.1/index.html ${Font}\n"
-			exit 1
+			echo -e "\n${ERROR}${Blue}检测到脚本目录下的OpenSSL版本包为 ${Font}${Red}${openssl_version}${Font}${Blue}，可能不适用于当前系统，建议更换为${Font}${Yellow}openssl-1.1.1w${Font}${Blue}的版本，下载地址：${Font}${Yellow}https://www.openssl.org/source/old/index.html ${Font}${Blue}。Detected that the OpenSSL package in the script directory is ${Font}${Red}${openssl_version}${Font}${Blue},may not be applicable to the current system,it is recommended to replace it with the version of ${Font}${Yellow}openssl-1.1.1w${Font}${Blue},download url:${Font}${Yellow}https://www.openssl.org/source/old/index.html ${Font}\n"
+
+			echo -e "${INFO}${Blue}安装将在${Font}${Red}20秒${Font}${Blue}后继续，您可以随时按下Ctrl+C结束安装。The installation will continue in ${Font}${Red}20 seconds${Font}${Blue},and you can press Ctrl+C at any time to end the installation.${Font}\n"
+
+			sleep 20
+		else
+			print_ok "检测到脚本目录下的OpenSSL版本包为 ${Font}${Yellow}${openssl_version}${Blue}，继续执行安装程序。Detected that the OpenSSL package in the script directory is ${Font}${Yellow}${openssl_version}${Blue},continue installation."
 		fi
-		print_ok "检测到脚本目录下的OpenSSL版本包为 ${Font}${Red}${openssl_version}${Blue}，继续执行安装程序。Detected that the OpenSSL package in the script directory is ${Font}${Red}${openssl_version}${Blue},continue installation."
-		
+
 		case ${update_choose_num} in
 		1)
 			telnet_install
@@ -276,7 +282,7 @@ function openssh_download() {
 			print_ok "获取OpenSSH版本包列表成功。Obtain the list of OpenSSH packages success."
 		fi
 		
-		echo -e "\n${CHOOSE}${Blue}最新的OpenSSH版本包为 ${Font}${Red}${openssh_version}${Font}${Blue}，是否升级到此版本？(y/n)\nThe latest OpenSSH version is ${Font}${Red}${openssh_version}${Font}${Blue},do you want to upgrade to this version? (y/n)：${Font}"
+		echo -e "\n${CHOOSE}${Blue}最新的OpenSSH版本包为 ${Font}${Yellow}${openssh_version}${Font}${Blue}，是否升级到此版本？(y/n)\nThe latest OpenSSH version is ${Font}${Yellow}${openssh_version}${Font}${Blue},do you want to upgrade to this version? (y/n)：${Font}"
 		read -r download_openssh
 		case ${download_openssh} in
 		[yY][eE][sS] | [yY])
@@ -301,7 +307,7 @@ function openssl_download() {
 	if [[ ${openssl_version} == "" ]];then
 
 		if [[ ${system_version} == "centos7" ]]; then
-			echo -e "\n${Blue}请自行前往 ${Font}${Yellow}https://www.openssl.org/source/old/1.1.1/index.html ${Font}${Blue}下载您需要升级的OpenSSL版本包，建议下载openssl-1.x.xx的版本，放在脚本同目录下。Please download the OpenSSL version you need to upgrade from the ${Font}${Yellow}https://www.openssl.org/source/old/1.1.1/index.html ${Font}${Blue},suggest downloading the version of openssl-1.x.xx,place it in the same directory as the script.${Font}\n"
+			echo -e "\n${Blue}您的系统版本已不受支持，请自行前往 ${Font}${Yellow}https://www.openssl.org/source/old/index.html ${Font}${Blue}下载您需要升级的OpenSSL版本包，建议下载${Font}${Yellow}openssl-1.1.1w${Font}${Blue}的版本，放在脚本同目录下。Your system is no longer supported,please download the OpenSSL version you need to upgrade from the ${Font}${Yellow}https://www.openssl.org/source/old/index.html ${Font}${Blue},suggest downloading the version of ${Font}${Yellow}openssl-1.1.1w${Font}${Blue},place it in the same directory as the script.${Font}\n"
 			exit 1
 		fi
 
